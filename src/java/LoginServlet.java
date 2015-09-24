@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -56,20 +57,34 @@ public class LoginServlet extends HttpServlet {
    // request correspond aux données envoyées par le formulaire HTML 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // méthode avec la redirection 
+        Cookie idCookie = new Cookie("id", request.getRemoteAddr()); 
+        Cookie clientCookie = new Cookie("client", request.getRemoteHost()); 
+        
+        Authentification a = new Authentification(); 
+        boolean res; 
+        res=a.estReconnu(request.getParameter("nom"), request.getParameter("mdp")); 
+        RequestDispatcher dispa; 
+        if(res == true)
+            dispa = request.getRequestDispatcher("suite.html"); 
+        else
+            dispa = request.getRequestDispatcher("index.html"); 
+        
+        
+        dispa.forward(request, response); 
+        
+        /* methode avec création du html 
         // indique que la réponse sera de type HTML 
         response.setContentType("text/html;charset=UTF-8");
         
-        Cookie nomco = new Cookie("nom", request.getParameter("nom")); 
-        
-        
-        Cookie[] lesCookies = request.getCookies(); 
         Authentification a = new Authentification(); 
         boolean res; 
         res=a.estReconnu(request.getParameter("nom"), request.getParameter("mdp")); 
         
         try (PrintWriter out = response.getWriter()) {
            
-            /* TODO output your page here. You may use following sample code. */
+            /* TODO output your page here. You may use following sample code. 
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -77,17 +92,7 @@ public class LoginServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<p>test cookie</p>"); 
-            if (lesCookies != null)
-            {
-                for(int i=0;i<lesCookies.length;++i){
-                    if (lesCookies[i].getName().equalsIgnoreCase("nom"))
-                    {
-                        out.println( "<h1>Name : " + lesCookies[i].getName() );
-                        out.println( "<h1>Value : " + lesCookies[i].getValue() );
-                        out.println("<p>fin test</p>"); 
-                    }
-                }
-            }
+            
             if(res == true)
             {
                 out.println("<h1>Bonjour "+request.getParameter("nom")+"</h1>");
@@ -99,8 +104,8 @@ public class LoginServlet extends HttpServlet {
                 out.println("<h1 style='color:RED;'>Nom : "+request.getParameter("nom")+" et Pwd :"+request.getParameter("mdp")+"</h1>");
             }
             out.println("</body>");
-            out.println("</html>");
-        }
+            out.println("</html>"); 
+        } */
     }
             
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
