@@ -18,6 +18,7 @@ import java.util.Hashtable;
  */
 public class Authentification {
     
+    // contient toutes les valeurs contenu dans la base
     Hashtable<String, String> res_req;  
     
     public Authentification()

@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginServlet extends HttpServlet { 
     
    @Override
+   // Charger une seule fois 
    public void init()
    {
        /** Chargement du driver jdbc - étape 1 */ 
@@ -50,10 +52,17 @@ public class LoginServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+   
+   // request correspond aux données envoyées par le formulaire HTML 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // indique que la réponse sera de type HTML 
         response.setContentType("text/html;charset=UTF-8");
         
+        Cookie nomco = new Cookie("nom", request.getParameter("nom")); 
+        
+        
+        Cookie[] lesCookies = request.getCookies(); 
         Authentification a = new Authentification(); 
         boolean res; 
         res=a.estReconnu(request.getParameter("nom"), request.getParameter("mdp")); 
@@ -67,6 +76,18 @@ public class LoginServlet extends HttpServlet {
             out.println("<title>Reponse connexion</title>");            
             out.println("</head>");
             out.println("<body>");
+            out.println("<p>test cookie</p>"); 
+            if (lesCookies != null)
+            {
+                for(int i=0;i<lesCookies.length;++i){
+                    if (lesCookies[i].getName().equalsIgnoreCase("nom"))
+                    {
+                        out.println( "<h1>Name : " + lesCookies[i].getName() );
+                        out.println( "<h1>Value : " + lesCookies[i].getValue() );
+                        out.println("<p>fin test</p>"); 
+                    }
+                }
+            }
             if(res == true)
             {
                 out.println("<h1>Bonjour "+request.getParameter("nom")+"</h1>");
@@ -95,6 +116,7 @@ public class LoginServlet extends HttpServlet {
     public void doGet( HttpServletRequest request, HttpServletResponse response )
                 throws ServletException, IOException {
         response.setContentType( "text/html" );
+        
         processRequest(request, response);
         
     }
